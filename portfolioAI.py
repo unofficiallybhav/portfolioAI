@@ -167,13 +167,29 @@ class AgentState(BaseModel):
             extract_JD(jd)
             match_skills(candidate,role)
 
-            FORMAT:
-            Thought: what you need to do
-            Action: tool_name
+            When you need a tool, use EXACTLY this format:
+
+            Thought: ...
+            Action: extract_JD
+
+            or
+
+            Thought: ...
+            Action: match_skills
+
+            After receiving an Observation, continue reasoning until the task is complete.
+
+            When you are ready to answer the user, output ONLY:
+
+            Final Answer:
+            <the complete response to the user>
+
+            Do not write any explanation before "Final Answer:".
+            Do not summarize after "Final Answer:".
+            The entire user-visible answer must appear after "Final Answer:".
             
             Only follow the FORMAT when a tool call is needed if information is already 
             present then just respond.
-            But always respond using "Final Answer: your answer"  when finished.
 
             Current Agent State:
             Candidate profile is present
