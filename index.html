@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Ask about Bhavyy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper:      #E8EBF1;
+    --surface:    #FFFFFF;
+    --ink:        #141A2A;
+    --ink-soft:   #5A6478;
+    --line:       #D3D9E4;
+    --accent:     #2F3ACF;
+    --accent-tint:#E6E8FB;
+    --good:       #1F7A55;
+    --warn:       #9A6400;
+    --bad:        #AF3729;
+
+    --display: "Space Grotesk", system-ui, sans-serif;
+    --body: "Inter", system-ui, sans-serif;
+    --data: "IBM Plex Mono", ui-monospace, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 15px;
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .eyebrow {
+    font-family: var(--data);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  header {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 20px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .mark {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: -0.01em;
+  }
+
+  .mark span { color: var(--accent); }
+
+  #status {
+    font-family: var(--data);
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-left: auto;
+  }
+
+  button {
+    font: inherit;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 120ms ease, border-color 120ms ease;
+  }
+
+  button:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .ghost {
+    font-family: var(--data);
+    font-size: 12px;
+    padding: 6px 12px;
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+  }
+
+  .ghost:hover { border-color: var(--ink-soft); color: var(--ink); }
+
+  main { flex: 1; overflow-y: auto; padding: 32px 20px 8px; }
+  .wrap { max-width: 720px; margin: 0 auto; }
+
+  .turn { margin-bottom: 28px; }
+  .turn .eyebrow { margin-bottom: 6px; display: block; }
+
+  .turn.user .body {
+    background: var(--ink);
+    color: #F3F5F9;
+    padding: 12px 16px;
+    border-radius: 10px;
+    white-space: pre-wrap;
+  }
+
+  .turn.agent .body { white-space: pre-wrap; }
+
+  .turn.error .body {
+    border-left: 3px solid var(--bad);
+    padding-left: 14px;
+    color: var(--bad);
+  }
+
+  /* Verdict card */
+  .verdict {
+    margin-top: 16px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .verdict .role { padding: 14px 18px 12px; border-bottom: 1px solid var(--line); }
+
+  .verdict .role strong {
+    font-family: var(--display);
+    font-size: 17px;
+    display: block;
+    margin-top: 2px;
+  }
+
+  .gauge { padding: 18px; }
+  .gauge .row { display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px; }
+
+  .score { font-family: var(--data); font-size: 34px; font-weight: 500; line-height: 1; }
+
+  .track { height: 6px; background: var(--paper); border-radius: 3px; overflow: hidden; }
+  .fill { height: 100%; width: 0; border-radius: 3px; transition: width 700ms cubic-bezier(.2,.8,.2,1); }
+
+  .skills { padding: 0 18px 18px; }
+
+  .skills h4 {
+    margin: 14px 0 8px;
+    font-family: var(--data);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 400;
+    color: var(--ink-soft);
+  }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .chip { font-family: var(--data); font-size: 12px; padding: 4px 9px; border-radius: 5px; border: 1px solid var(--line); }
+  .chip.has { border-color: var(--good); color: var(--good); }
+  .chip.gap { border-color: var(--line); color: var(--ink-soft); }
+
+  /* Empty state */
+  .empty { padding-top: 24px; }
+
+  .empty h1 {
+    font-family: var(--display);
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 8px 0 6px;
+  }
+
+  .empty p { color: var(--ink-soft); margin: 0 0 22px; max-width: 48ch; }
+
+  .starters { display: grid; gap: 8px; }
+
+  .starter {
+    text-align: left;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 12px 14px;
+    color: var(--ink);
+    font-size: 14px;
+  }
+
+  .starter:hover { border-color: var(--accent); background: var(--accent-tint); }
+
+  .working { display: flex; align-items: center; gap: 10px; color: var(--ink-soft); font-family: var(--data); font-size: 12px; }
+  .pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); animation: pulse 1.1s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: .25; } 50% { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+  footer { flex: none; padding: 12px 20px 20px; background: linear-gradient(to top, var(--paper) 70%, transparent); }
+
+  .composer {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 8px 8px 8px 14px;
+  }
+
+  .composer:focus-within { border-color: var(--accent); }
+
+  textarea {
+    flex: 1;
+    border: none;
+    resize: none;
+    font: inherit;
+    color: inherit;
+    background: transparent;
+    padding: 6px 0;
+    max-height: 180px;
+    outline: none;
+  }
+
+  .send { background: var(--accent); color: #fff; border: none; padding: 9px 16px; font-family: var(--data); font-size: 13px; }
+  .send:hover:not(:disabled) { background: #232DA8; }
+  .send:disabled { background: var(--line); color: var(--ink-soft); cursor: not-allowed; }
+
+  .hint { max-width: 720px; margin: 8px auto 0; font-family: var(--data); font-size: 11px; color: var(--ink-soft); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="mark">Bhavyy<span>.</span>Khurana</div>
+  <button class="ghost" id="reset">New chat</button>
+  <div id="status">connecting…</div>
+</header>
+
+<main id="scroll">
+  <div class="wrap" id="transcript" aria-live="polite"></div>
+</main>
+
+<footer>
+  <div class="composer">
+    <textarea id="input" rows="1" placeholder="Ask about my skills or projects, or paste a job description…"></textarea>
+    <button class="send" id="send" disabled>Send</button>
+  </div>
+  <div class="hint">Enter sends · Shift+Enter adds a line · answers come only from my resume</div>
+</footer>
+
+<script>
+const API = "http://localhost:8000";
+
+let sessionId = null;
+let busy = false;
+let lastVerdictKey = null;
+let mySkills = [];
+
+const transcript = document.getElementById("transcript");
+const scroll = document.getElementById("scroll");
+const input = document.getElementById("input");
+const sendBtn = document.getElementById("send");
+const resetBtn = document.getElementById("reset");
+const statusTag = document.getElementById("status");
+
+function el(tag, cls, text) {
+  const node = document.createElement(tag);
+  if (cls) node.className = cls;
+  if (text != null) node.textContent = text;
+  return node;
+}
+
+function addTurn(role, text) {
+  const turn = el("div", "turn " + role);
+  turn.append(el("span", "eyebrow", role === "user" ? "You" : role === "error" ? "Problem" : "Bhavyy's bot"));
+  turn.append(el("div", "body", text));
+  transcript.append(turn);
+  scroll.scrollTop = scroll.scrollHeight;
+  return turn;
+}
+
+function scoreColor(n) {
+  return n >= 70 ? "var(--good)" : n >= 45 ? "var(--warn)" : "var(--bad)";
+}
+
+function hasSkill(required) {
+  const needle = required.toLowerCase();
+  return mySkills.some(s => {
+    const hay = String(s).toLowerCase();
+    return hay.includes(needle) || needle.includes(hay);
+  });
+}
+
+function addVerdict(jd, result) {
+  const card = el("div", "verdict");
+
+  const role = el("div", "role");
+  role.append(el("span", "eyebrow", "Measured against"));
+  role.append(el("strong", null, jd.role || "Unspecified role"));
+  card.append(role);
+
+  const gauge = el("div", "gauge");
+  const row = el("div", "row");
+  const score = el("div", "score", String(result.score));
+  score.style.color = scoreColor(result.score);
+  row.append(score);
+  row.append(el("span", "eyebrow", "out of 100"));
+  gauge.append(row);
+
+  const track = el("div", "track");
+  const fill = el("div", "fill");
+  fill.style.background = scoreColor(result.score);
+  track.append(fill);
+  gauge.append(track);
+  card.append(gauge);
+
+  const required = (jd.skills || []).filter(Boolean).map(String);
+  if (required.length) {
+    const skills = el("div", "skills");
+    const met = required.filter(hasSkill);
+    const missing = required.filter(s => !hasSkill(s));
+
+    if (met.length) {
+      skills.append(el("h4", null, "On my resume"));
+      const chips = el("div", "chips");
+      met.forEach(s => chips.append(el("span", "chip has", s)));
+      skills.append(chips);
+    }
+    if (missing.length) {
+      skills.append(el("h4", null, "Not on my resume"));
+      const chips = el("div", "chips");
+      missing.forEach(s => chips.append(el("span", "chip gap", s)));
+      skills.append(chips);
+    }
+    card.append(skills);
+  }
+
+  transcript.append(card);
+  requestAnimationFrame(() => { fill.style.width = result.score + "%"; });
+  scroll.scrollTop = scroll.scrollHeight;
+}
+
+function showEmptyState(name) {
+  transcript.innerHTML = "";
+  const box = el("div", "empty");
+  box.append(el("span", "eyebrow", "Portfolio bot"));
+  box.append(el("h1", null, "Ask me about " + (name || "Bhavyy")));
+  box.append(el("p", null,
+    "I answer from one source: this resume. Ask about skills, projects, or coursework — or paste a job description and I'll score the fit honestly, gaps included."));
+
+  const starters = el("div", "starters");
+  [
+    "What projects have you built, and what did you use?",
+    "Which course are you doing, and from where?",
+    "Forward Deployed Engineer needed. Required: Java, C, Python. Preferred: Kubernetes, Docker. What's your verdict?"
+  ].forEach(text => {
+    const b = el("button", "starter", text);
+    b.addEventListener("click", () => { input.value = text; resize(); send(); });
+    starters.append(b);
+  });
+  box.append(starters);
+  transcript.append(box);
+}
+
+async function call(path, options) {
+  const res = await fetch(API + path, options);
+  if (!res.ok) {
+    let detail = res.statusText;
+    try { detail = (await res.json()).detail || detail; } catch {}
+    const err = new Error(detail);
+    err.status = res.status;
+    throw err;
+  }
+  return res.status === 204 ? null : res.json();
+}
+
+async function startSession() {
+  statusTag.textContent = "connecting…";
+  try {
+    const info = await call("/sessions", { method: "POST" });
+    sessionId = info.session_id;
+    mySkills = info.candidate.skills || [];
+    lastVerdictKey = null;
+    const cgpa = info.candidate.cgpa;
+    statusTag.textContent = cgpa ? "CGPA " + cgpa : "ready";
+    showEmptyState(info.candidate.name);
+  } catch (err) {
+    statusTag.textContent = "offline";
+    transcript.innerHTML = "";
+    addTurn("error", "Can't reach the API at " + API + ". Start it with `uvicorn api:app --reload` and reload this page.");
+  }
+  setEnabled();
+}
+
+function cleanAnswer(text) {
+  const i = text.lastIndexOf("Final Answer:");
+  return (i === -1 ? text : text.slice(i + "Final Answer:".length)).trim();
+}
+
+async function send() {
+  const message = input.value.trim();
+  if (!message || busy || !sessionId) return;
+
+  if (transcript.querySelector(".empty")) transcript.innerHTML = "";
+  addTurn("user", message);
+  input.value = "";
+  resize();
+
+  busy = true;
+  setEnabled();
+
+  const turn = el("div", "turn");
+  const working = el("div", "working");
+  working.append(el("div", "pulse"));
+  const label = el("span", null, "Thinking… 0s");
+  working.append(label);
+  turn.append(working);
+  transcript.append(turn);
+  scroll.scrollTop = scroll.scrollHeight;
+
+  const started = Date.now();
+  const tick = setInterval(() => {
+    label.textContent = "Thinking… " + Math.round((Date.now() - started) / 1000) + "s";
+  }, 1000);
+
+  try {
+    const data = await call("/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message, session_id: sessionId })
+    });
+    turn.remove();
+    addTurn("agent", cleanAnswer(data.answer));
+
+    if (data.match_result && data.jd) {
+      const key = data.jd.role + "|" + data.match_result.score + "|" + data.match_result.verdict;
+      if (key !== lastVerdictKey) {
+        lastVerdictKey = key;
+        addVerdict(data.jd, data.match_result);
+      }
+    }
+  } catch (err) {
+    turn.remove();
+    addTurn("error", err.status
+      ? err.message
+      : "Lost the connection to " + API + ". Check that the server is still running.");
+  } finally {
+    clearInterval(tick);
+    busy = false;
+    setEnabled();
+    input.focus();
+  }
+}
+
+function setEnabled() {
+  sendBtn.disabled = busy || !sessionId || !input.value.trim();
+  sendBtn.textContent = busy ? "Working" : "Send";
+}
+
+function resize() {
+  input.style.height = "auto";
+  input.style.height = Math.min(input.scrollHeight, 180) + "px";
+}
+
+input.addEventListener("input", () => { resize(); setEnabled(); });
+input.addEventListener("keydown", e => {
+  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
+});
+sendBtn.addEventListener("click", send);
+
+resetBtn.addEventListener("click", async () => {
+  if (busy) return;
+  const old = sessionId;
+  sessionId = null;
+  setEnabled();
+  if (old) { try { await call("/sessions/" + old, { method: "DELETE" }); } catch {} }
+  startSession();
+});
+
+startSession();
+</script>
+</body>
+</html>
