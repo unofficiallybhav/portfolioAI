@@ -342,13 +342,12 @@ function showEmptyState(name) {
   box.append(el("span", "eyebrow", "Portfolio bot"));
   box.append(el("h1", null, "Ask me about " + (name || "Bhavyy")));
   box.append(el("p", null,
-    "I answer from one source: this resume. Ask about skills, projects, or coursework — or paste a job description and I'll score the fit honestly, gaps included."));
+    "Ask about skills, projects, or coursework — or paste a job description and I'll score the fit honestly, gaps included."));
 
   const starters = el("div", "starters");
   [
     "What projects have you built, and what did you use?",
-    "Which course are you doing, and from where?",
-    "Forward Deployed Engineer needed. Required: Java, C, Python. Preferred: Kubernetes, Docker. What's your verdict?"
+    "Which course are you doing, and from where?"
   ].forEach(text => {
     const b = el("button", "starter", text);
     b.addEventListener("click", () => { input.value = text; resize(); send(); });
