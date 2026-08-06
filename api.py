@@ -11,6 +11,8 @@ import uuid
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Optional
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -71,17 +73,10 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Portfolio Bot", version="1.0", lifespan=lifespan)
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "https://your-frontend.onrender.com"
-    ],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
+app.mount("/static", StaticFiles(directory="static"), name="static")
+@app.get("/")
+def home():
+    return FileResponse("index.html")
 
 class ChatRequest(BaseModel):
     message: str = Field(min_length=1, max_length=8000)
