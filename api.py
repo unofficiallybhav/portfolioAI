@@ -73,7 +73,6 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Portfolio Bot", version="1.0", lifespan=lifespan)
-app.mount("/static", StaticFiles(directory="static"), name="static")
 @app.get("/")
 def home():
     return FileResponse("index.html")
