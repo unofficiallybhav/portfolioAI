@@ -11,7 +11,6 @@ import uuid
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Optional
-from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
 from fastapi import FastAPI, HTTPException
@@ -73,9 +72,9 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Portfolio Bot", version="1.0", lifespan=lifespan)
-@app.get("/")
-def home():
-    return FileResponse("index.html")
+@app.get("/", include_in_schema=False)
+def frontend():
+    return FileResponse(BASE_DIR / "index.html")
 
 class ChatRequest(BaseModel):
     message: str = Field(min_length=1, max_length=8000)

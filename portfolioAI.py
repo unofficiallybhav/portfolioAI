@@ -16,7 +16,6 @@ if not my_api_key:
 client=Groq(api_key=my_api_key)
 model="openai/gpt-oss-120b"
 
-
 def llm_call(sys,user):
     msgs=[{"role":"system","content":sys},{"role":"user","content":user}]
     response=client.chat.completions.create(model=model,messages=msgs,response_format={"type":"json_object"})

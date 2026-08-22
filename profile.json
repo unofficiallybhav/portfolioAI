@@ -1,31 +1,29 @@
 {
   "name": "Bhavyy Khurana",
   "skills": [
-    "C",
-    "C++",
-    "Java",
     "Python",
+    "C++",
+    "C",
+    "Java",
     "SQL",
     "PyTorch",
     "Scikit-learn",
-    "Pandas",
     "NumPy",
-    "LightGBM",
-    "XGBoost",
+    "Pandas",
     "Matplotlib",
-    "Git",
-    "PostgreSQL",
     "PostGIS",
-    "H3 Spatial Indexing"
+    "PostgreSQL"
   ],
   "project_details": [
-    "Hopfield Networks with Adaptive Memory and Dynamic Pattern Forgetting: Built a Hopfield-network variant that resists memory degradation under interference by adding feedback-driven adaptive forgetting, proposed as Adaptive Hopfield Memory (AHM-DPF). Improved recall accuracy by 25-33 percentage points over classical Hopfield baselines under high-interference regimes on a purpose-built bit-pattern benchmark (8-D to 64-D).",
-    "Adversarial Robustness of Network Intrusion Detection Systems: Built a DNN-based NIDS on UNSW-NB15 achieving a weighted F1 of 0.709. Evaluated adversarial robustness under FGSM & PGD attacks; exposed 81.7% macro-F1 collapse and a degenerate prediction artifact that inflated robustness estimates in prior work.",
-    "Network Intrusion Anomaly Detection System GitHub: Built a hybrid intrusion detection pipeline combining a supervised Random Forest layer for known threats with unsupervised One-Class SVM for zero-day attack detection. Achieved 0.858 ROC-AUC for zero-day detection, with the supervised layer evaluated using imbalance-aware metrics on the heavily class-imbalanced UNSW-NB15 dataset."
+    "Built an LLM-powered portfolio assistant using FastAPI and OpenAI’s GPT-OSS; designed a ReAct-style agent with custom tools for job description extraction and automated candidate-job matching (Portfolio AI Live).",
+    "Built an acquisition-robust lung‑nodule detection pipeline combining physics‑simulated CT augmentation, an anisotropy‑conditioned 3D Swin Transformer encoder, and a cross‑acquisition consistency‑distillation loss; validated a thinning‑induced detection reduction (5 mm CPM reduction from 33.1% to 21.6%) without loss of baseline detection capability (Acquisition Robust Network).",
+    "Developed a CUDA‑accelerated stereo depth pipeline using Census transform, 8‑path Semi‑Global Matching and winner‑takes‑all disparity selection; implemented six custom CUDA stages with shared memory, parallel min‑reduction, and GPU global‑memory pipelines, processing KITTI Stereo 2015 pairs without CPU intervention, achieving 7.1% Bad 3.0 error, 1.78 px MAE, and 168.5 ms median processing time across 200 scenes (~30× speedup over CPU baseline) (CUDA Stereo Depth Estimation).",
+    "Developed AHM‑DPF, a feedback‑driven Hopfield architecture with adaptive memory updates and selective forgetting to mitigate catastrophic interference; evaluated variants on a BitPatternSet benchmark, achieving 99.8% accuracy in the 64‑D setting and 87.3% in the 8‑D setting, outperforming non‑adaptive variants by 25‑33 percentage points (Adaptive Hopfield Memory with Dynamic Pattern Forgetting).",
+    "Created a two‑stage network intrusion anomaly detection system using supervised models for known threats and unsupervised models for zero‑day detection on the UNSW‑NB15 dataset; achieved 99.47% accuracy with Random Forest for known threats and ROC‑AUC 0.858 with Isolation Forest for zero‑day detection (Network Intrusion Anomaly Detection System)."
   ],
   "cgpa": 7.93,
-  "education": "B.Tech in Computer Science Engineering (Artificial Intelligence and Machine Learning) at Manipal Institute of Technology",
-  "certifications": "Big Data Specialization (UC San Diego)",
-  "work_exp": "Data and Analytics Intern at Lepton Software (2026)",
-  "internship_details": "Built a sub-hourly nowcasting pipeline to predict rainfall-driven traffic disruption, combining live persistence with GAN-downscaled 2km precipitation fields for short-horizon road impact forecasting. Designed and maintained the geospatial data layer by integrating ERA5 reanalysis, Google Weather API forecasts, and road-network mappings using H3 spatial indexing, PostGIS, and PostgreSQL."
+  "education": "B.Tech in Computer Science Engineering – Artificial Intelligence and Machine Learning, Manipal Institute of Technology, Manipal, Karnataka (2023 – 2027)",
+  "certifications": "Big Data Specialization – University of California San Diego",
+  "work_exp": "No additional work experience.",
+  "internship_details": "Data and Analytics Intern at Lepton Software (2026): Built a sub‑hourly rainfall nowcasting and traffic‑impact pipeline integrating spateGAN and multi‑quantile regression models to forecast road‑level traffic disruption; engineered a geospatial data layer by integrating ERA5 reanalysis, Google Weather API and H3 spatial indexing for operational road‑impact forecasting across Pune and Kolkata; back‑tested over 59,000 road‑hour predictions, reducing speed error by 18‑63% versus climatological baselines."
 }
