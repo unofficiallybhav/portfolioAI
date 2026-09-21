@@ -11,5 +11,4 @@ wheels/
 .env
 
 profile.tmp
-knowledge/
 legacy/
