@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Ask about Bhavyy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper:      #E8EBF1;
+    --surface:    #FFFFFF;
+    --ink:        #141A2A;
+    --ink-soft:   #5A6478;
+    --line:       #D3D9E4;
+    --accent:     #2F3ACF;
+    --accent-tint:#E6E8FB;
+    --good:       #1F7A55;
+    --warn:       #9A6400;
+    --bad:        #AF3729;
+
+    --display: "Space Grotesk", system-ui, sans-serif;
+    --body: "Inter", system-ui, sans-serif;
+    --data: "IBM Plex Mono", ui-monospace, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 15px;
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .eyebrow {
+    font-family: var(--data);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  header {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 20px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .mark {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: -0.01em;
+  }
+
+  .mark span { color: var(--accent); }
+
+  #status {
+    font-family: var(--data);
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-left: auto;
+  }
+
+  button {
+    font: inherit;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 120ms ease, border-color 120ms ease;
+  }
+
+  button:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .ghost {
+    font-family: var(--data);
+    font-size: 12px;
+    padding: 6px 12px;
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+  }
+
+  .ghost:hover { border-color: var(--ink-soft); color: var(--ink); }
+
+  main { flex: 1; overflow-y: auto; padding: 32px 20px 8px; }
+  .wrap { max-width: 720px; margin: 0 auto; }
+
+  .turn { margin-bottom: 28px; }
+  .turn .eyebrow { margin-bottom: 6px; display: block; }
+
+  .turn.user .body {
+    background: var(--ink);
+    color: #F3F5F9;
+    padding: 12px 16px;
+    border-radius: 10px;
+    white-space: pre-wrap;
+  }
+
+  .turn.agent .body { white-space: pre-wrap; }
+
+  .turn.error .body {
+    border-left: 3px solid var(--bad);
+    padding-left: 14px;
+    color: var(--bad);
+  }
+
+  /* Verdict card */
+  .verdict {
+    margin-top: 16px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .verdict .role { padding: 14px 18px 12px; border-bottom: 1px solid var(--line); }
+
+  .verdict .role strong {
+    font-family: var(--display);
+    font-size: 17px;
+    display: block;
+    margin-top: 2px;
+  }
+
+  .gauge { padding: 18px; }
+  .gauge .row { display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px; }
+
+  .score { font-family: var(--data); font-size: 34px; font-weight: 500; line-height: 1; }
+
+  .track { height: 6px; background: var(--paper); border-radius: 3px; overflow: hidden; }
+  .fill { height: 100%; width: 0; border-radius: 3px; transition: width 700ms cubic-bezier(.2,.8,.2,1); }
+
+  .skills { padding: 0 18px 18px; }
+
+  .skills h4 {
+    margin: 14px 0 8px;
+    font-family: var(--data);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 400;
+    color: var(--ink-soft);
+  }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .chip { font-family: var(--data); font-size: 12px; padding: 4px 9px; border-radius: 5px; border: 1px solid var(--line); }
+  .chip.has { border-color: var(--good); color: var(--good); }
+  .chip.gap { border-color: var(--line); color: var(--ink-soft); }
+
+  /* Empty state */
+  .empty { padding-top: 24px; }
+
+  .empty h1 {
+    font-family: var(--display);
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 8px 0 6px;
+  }
+
+  .empty p { color: var(--ink-soft); margin: 0 0 22px; max-width: 48ch; }
+
+  .starters { display: grid; gap: 8px; }
+
+  .starter {
+    text-align: left;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 12px 14px;
+    color: var(--ink);
+    font-size: 14px;
+  }
+
+  .starter:hover { border-color: var(--accent); background: var(--accent-tint); }
+
+  .working { display: flex; align-items: center; gap: 10px; color: var(--ink-soft); font-family: var(--data); font-size: 12px; }
+  .pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); animation: pulse 1.1s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: .25; } 50% { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+  footer { flex: none; padding: 12px 20px 20px; background: linear-gradient(to top, var(--paper) 70%, transparent); }
+
+  .composer {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 8px 8px 8px 14px;
+  }
+
+  .composer:focus-within { border-color: var(--accent); }
+
+  textarea {
+    flex: 1;
+    border: none;
+    resize: none;
+    font: inherit;
+    color: inherit;
+    background: transparent;
+    padding: 6px 0;
+    max-height: 180px;
+    outline: none;
+  }
+
+  .send { background: var(--accent); color: #fff; border: none; padding: 9px 16px; font-family: var(--data); font-size: 13px; }
+  .send:hover:not(:disabled) { background: #232DA8; }
+  .send:disabled { background: var(--line); color: var(--ink-soft); cursor: not-allowed; }
+
+  .hint { max-width: 720px; margin: 8px auto 0; font-family: var(--data); font-size: 11px; color: var(--ink-soft); }
+  .attach { background: transparent; border: 1px solid var(--line); color: var(--ink-soft); padding: 8px 10px; font-family: var(--data); font-size: 13px; }
+  .attach:hover:not(:disabled) { border-color: var(--ink-soft); color: var(--ink); }
+  .attach:disabled { opacity: .5; cursor: not-allowed; }
+  .composer-col { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  .file-chip { align-self: flex-start; display: none; align-items: center; gap: 6px; margin: 4px 0 2px; font-family: var(--data); font-size: 12px; padding: 3px 4px 3px 9px; border-radius: 5px; background: var(--accent-tint); color: var(--accent); max-width: 100%; }
+  .file-chip.on { display: inline-flex; }
+  .file-chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .file-chip button { background: transparent; border: none; color: inherit; padding: 0 5px; font-size: 14px; line-height: 1; }
+  .attached { display: block; margin-top: 8px; font-family: var(--data); font-size: 12px; opacity: .75; }
+  .verdict .rec { font-family: var(--data); font-size: 12px; padding: 2px 8px; border-radius: 5px; border: 1px solid currentColor; margin-left: auto; }
+  .caret::after { content: "▍"; color: var(--accent); animation: pulse 1s ease-in-out infinite; }
+  .composer.drag { border-color: var(--accent); background: var(--accent-tint); }
+  @media (max-width: 520px) {
+    .hint { display: none; }
+    header { gap: 10px; padding: 12px 16px; }
+    main { padding: 20px 16px 8px; }
+    footer { padding: 10px 16px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="mark">Bhavyy<span>.</span>Khurana</div>
+  <button class="ghost" id="reset">New chat</button>
+  <div id="status">connecting…</div>
+</header>
+
+<main id="scroll">
+  <div class="wrap" id="transcript" aria-live="polite"></div>
+</main>
+
+<footer>
+  <div class="composer" id="composer">
+    <button class="attach" id="attach" title="Attach a job description (.pdf, .docx, .md)" aria-label="Attach a file">+ File</button>
+    <input type="file" id="file" accept=".pdf,.docx,.md" hidden>
+    <div class="composer-col">
+      <div class="file-chip" id="fileChip"><span id="fileName"></span><button id="fileClear" aria-label="Remove file">×</button></div>
+      <textarea id="input" rows="1" placeholder="Ask about skills or projects, or paste or attach a job description…"></textarea>
+    </div>
+    <button class="send" id="send" disabled>Send</button>
+  </div>
+  <div class="hint">Enter sends · Shift+Enter adds a line · attach .pdf, .docx or .md · answers come only from my resume and project write-ups</div>
+</footer>
+
+<script>
+const API = window.location.origin;
+const MAX_FILE_BYTES = 5 * 1024 * 1024;
+let sessionId = null;
+let busy = false;
+let lastVerdictKey = null;
+let pendingFile = null;
+
+const $ = id => document.getElementById(id);
+const transcript = $("transcript"), scroll = $("scroll"), input = $("input");
+const sendBtn = $("send"), resetBtn = $("reset"), statusTag = $("status");
+const attachBtn = $("attach"), fileInput = $("file"), fileChip = $("fileChip"), fileName = $("fileName");
+
+function el(tag, cls, text) {
+  const node = document.createElement(tag);
+  if (cls) node.className = cls;
+  if (text != null) node.textContent = text;
+  return node;
+}
+
+function nearBottom() { return scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight < 80; }
+function toBottom() { scroll.scrollTop = scroll.scrollHeight; }
+
+// Safe rendering of the only markdown the bot uses, **bold**. Everything else stays plain text.
+function renderInto(node, text) {
+  node.textContent = "";
+  text.split(/(\*\*[^*]+\*\*)/g).forEach(part => {
+    if (part.length > 4 && part.startsWith("**") && part.endsWith("**")) node.append(el("strong", null, part.slice(2, -2)));
+    else if (part) node.append(document.createTextNode(part));
+  });
+}
+
+function addTurn(role, text) {
+  const turn = el("div", "turn " + role);
+  turn.append(el("span", "eyebrow", role === "user" ? "You" : role === "error" ? "Problem" : "Bhavyy's bot"));
+  const body = el("div", "body");
+  renderInto(body, text);
+  turn.append(body);
+  transcript.append(turn);
+  toBottom();
+  return { turn, body };
+}
+
+function scoreColor(n) { return n >= 70 ? "var(--good)" : n >= 45 ? "var(--warn)" : "var(--bad)"; }
+
+function chipGroup(title, skills, cls) {
+  const wrap = el("div");
+  wrap.append(el("h4", null, title));
+  const chips = el("div", "chips");
+  skills.forEach(s => chips.append(el("span", "chip " + cls, s)));
+  wrap.append(chips);
+  return wrap;
+}
+
+function addVerdict(jd, match) {
+  const card = el("div", "verdict");
+
+  const role = el("div", "role");
+  role.append(el("span", "eyebrow", "Measured against"));
+  role.append(el("strong", null, (jd.role || "Unspecified role") + (jd.company ? " · " + jd.company : "")));
+  card.append(role);
+
+  const gauge = el("div", "gauge");
+  const row = el("div", "row");
+  const score = el("div", "score", String(match.score));
+  score.style.color = scoreColor(match.score);
+  const rec = el("span", "rec", match.recommendation_label || match.recommendation);
+  rec.style.color = scoreColor(match.score);
+  row.append(score, el("span", "eyebrow", "out of 100"), rec);
+  gauge.append(row);
+  const track = el("div", "track"), fill = el("div", "fill");
+  fill.style.background = scoreColor(match.score);
+  track.append(fill);
+  gauge.append(track);
+  card.append(gauge);
+
+  const matched = match.matched_skills || [], missing = match.missing_skills || [];
+  if (matched.length || missing.length) {
+    const skills = el("div", "skills");
+    if (matched.length) skills.append(chipGroup("On my resume", matched, "has"));
+    if (missing.length) skills.append(chipGroup("Not on my resume", missing, "gap"));
+    card.append(skills);
+  }
+
+  transcript.append(card);
+  requestAnimationFrame(() => { fill.style.width = match.score + "%"; });
+  toBottom();
+}
+
+function showEmptyState(name) {
+  transcript.innerHTML = "";
+  const box = el("div", "empty");
+  box.append(el("span", "eyebrow", "Portfolio bot"));
+  box.append(el("h1", null, "Ask me about " + (name || "Bhavyy")));
+  box.append(el("p", null,
+    "I answer from two sources: the resume and detailed project write-ups. Ask about skills or projects, or attach a job description and I'll score the fit honestly, gaps included."));
+  const starters = el("div", "starters");
+  [
+    "Which projects involved GPU or CUDA work, and what was built?",
+    "What is being built right now?",
+    "ML Engineer, new grad. Required: Python, PyTorch, CUDA, computer vision. Preferred: Docker, Kubernetes. Responsibilities: train and deploy perception models. What's your verdict?"
+  ].forEach(text => {
+    const b = el("button", "starter", text);
+    b.addEventListener("click", () => { input.value = text; resize(); send(); });
+    starters.append(b);
+  });
+  box.append(starters);
+  transcript.append(box);
+}
+
+async function call(path, options) {
+  const res = await fetch(API + path, options);
+  if (!res.ok) {
+    let detail = res.statusText;
+    try { detail = (await res.json()).detail || detail; } catch {}
+    const err = new Error(detail);
+    err.status = res.status;
+    throw err;
+  }
+  return res;
+}
+
+async function startSession() {
+  statusTag.textContent = "connecting…";
+  try {
+    const info = await (await call("/sessions", { method: "POST" })).json();
+    sessionId = info.session_id;
+    lastVerdictKey = null;
+    const projects = info.candidate.projects || [];
+    const building = projects.filter(p => p.status === "in_progress").length;
+    statusTag.textContent = projects.length + " projects" + (building ? " · " + building + " in progress" : "");
+    showEmptyState(info.candidate.name);
+  } catch (err) {
+    statusTag.textContent = "offline";
+    transcript.innerHTML = "";
+    addTurn("error", "Can't reach the API at " + API + ". Start it with `uv run uvicorn api:app --reload` and reload this page.");
+  }
+  setEnabled();
+}
+
+// Reads a Server-Sent Events stream from a fetch response and calls onEvent(name, data).
+async function readEvents(res, onEvent) {
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  for (;;) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    let cut;
+    while ((cut = buffer.indexOf("\n\n")) !== -1) {
+      const block = buffer.slice(0, cut);
+      buffer = buffer.slice(cut + 2);
+      let name = "message", data = "";
+      block.split("\n").forEach(line => {
+        if (line.startsWith("event: ")) name = line.slice(7);
+        else if (line.startsWith("data: ")) data += line.slice(6);
+      });
+      if (data) onEvent(name, JSON.parse(data));
+    }
+  }
+}
+
+function setFile(file) {
+  if (!file) {
+    pendingFile = null;
+    fileChip.classList.remove("on");
+    fileInput.value = "";
+    setEnabled();
+    return;
+  }
+  const ext = file.name.slice(file.name.lastIndexOf(".")).toLowerCase();
+  if (![".pdf", ".docx", ".md"].includes(ext)) { addTurn("error", "Only .pdf, .docx and .md files are supported."); return; }
+  if (file.size > MAX_FILE_BYTES) { addTurn("error", "That file is larger than 5 MB."); return; }
+  pendingFile = file;
+  fileName.textContent = file.name;
+  fileChip.classList.add("on");
+  setEnabled();
+}
+
+async function send() {
+  const message = input.value.trim();
+  if ((!message && !pendingFile) || busy || !sessionId) return;
+  if (transcript.querySelector(".empty")) transcript.innerHTML = "";
+
+  const user = addTurn("user", message || "Here is a job description.");
+  const form = new FormData();
+  form.append("session_id", sessionId);
+  form.append("message", message);
+  if (pendingFile) {
+    user.body.append(el("span", "attached", "Attached: " + pendingFile.name));
+    form.append("file", pendingFile);
+  }
+  input.value = "";
+  setFile(null);
+  resize();
+
+  busy = true;
+  setEnabled();
+
+  const working = el("div", "turn");
+  const indicator = el("div", "working");
+  indicator.append(el("div", "pulse"));
+  const label = el("span", null, "Thinking… 0s");
+  indicator.append(label);
+  working.append(indicator);
+  transcript.append(working);
+  toBottom();
+
+  let phase = "Thinking";
+  const started = Date.now();
+  const showPhase = () => { label.textContent = phase + "… " + Math.round((Date.now() - started) / 1000) + "s"; };
+  const tick = setInterval(showPhase, 1000);
+
+  let answer = null, text = "";
+  const ensureAnswer = () => {
+    if (!answer) {
+      working.remove();
+      answer = addTurn("agent", "");
+      answer.body.classList.add("caret");
+    }
+    return answer;
+  };
+
+  try {
+    const res = await call("/chat", { method: "POST", body: form });
+    await readEvents(res, (name, data) => {
+      if (name === "status") {
+        phase = data.text;
+        showPhase();
+        if (answer) { // text streamed before a tool call: keep it, show progress below
+          answer.body.classList.remove("caret");
+          answer = null;
+          text = "";
+          transcript.append(working);
+          toBottom();
+        }
+      } else if (name === "token") {
+        const stick = nearBottom();
+        text += data.text;
+        renderInto(ensureAnswer().body, text);
+        if (stick) toBottom();
+      } else if (name === "done") {
+        if (data.match && data.jd) {
+          const key = JSON.stringify([data.jd.role, data.match.score, data.match.cover_letter]);
+          if (key !== lastVerdictKey) { lastVerdictKey = key; addVerdict(data.jd, data.match); }
+        }
+      } else if (name === "error") {
+        working.remove();
+        addTurn("error", data.message);
+      }
+    });
+    working.remove();
+  } catch (err) {
+    working.remove();
+    if (err.status === 404) { addTurn("error", err.message); startSession(); }
+    else addTurn("error", err.status ? err.message : "Lost the connection to " + API + ". Check that the server is still running.");
+  } finally {
+    clearInterval(tick);
+    if (answer) answer.body.classList.remove("caret");
+    busy = false;
+    setEnabled();
+    input.focus();
+  }
+}
+
+function setEnabled() {
+  sendBtn.disabled = busy || !sessionId || (!input.value.trim() && !pendingFile);
+  attachBtn.disabled = busy || !sessionId;
+  sendBtn.textContent = busy ? "Working" : "Send";
+}
+
+function resize() {
+  input.style.height = "auto";
+  input.style.height = Math.min(input.scrollHeight, 180) + "px";
+}
+
+input.addEventListener("input", () => { resize(); setEnabled(); });
+input.addEventListener("keydown", e => {
+  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
+});
+sendBtn.addEventListener("click", send);
+attachBtn.addEventListener("click", () => fileInput.click());
+fileInput.addEventListener("change", () => setFile(fileInput.files[0]));
+$("fileClear").addEventListener("click", () => setFile(null));
+
+const composer = $("composer");
+composer.addEventListener("dragover", e => { e.preventDefault(); composer.classList.add("drag"); });
+composer.addEventListener("dragleave", () => composer.classList.remove("drag"));
+composer.addEventListener("drop", e => {
+  e.preventDefault();
+  composer.classList.remove("drag");
+  if (!busy && e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]);
+});
+
+resetBtn.addEventListener("click", async () => {
+  if (busy) return;
+  const old = sessionId;
+  sessionId = null;
+  setFile(null);
+  setEnabled();
+  if (old) { try { await call("/sessions/" + old, { method: "DELETE" }); } catch {} }
+  startSession();
+});
+
+startSession();
+</script>
+</body>
+</html>

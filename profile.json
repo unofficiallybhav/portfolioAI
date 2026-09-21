@@ -1,0 +1,363 @@
+{
+  "version": "c99d9cb17333",
+  "built_at": "2026-09-21T08:21:50+00:00",
+  "sources": {
+    "resume.pdf": "051efba67a99382d5478b898feee165ccb5fdf290f56c825dde8b6adcd979d42",
+    "projects.md": "93191d898ad24e15c903584957b2595675b76d5ed60b208cedf7d977d79c950d"
+  },
+  "profile": {
+    "name": "Bhavyy Khurana",
+    "location": "Dehradun, India",
+    "email": "khuranabhavyy@gmail.com",
+    "links": [
+      {
+        "label": "GitHub",
+        "url": "https://github.com/unofficiallybhav"
+      },
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/bhavyykhurana"
+      },
+      {
+        "label": "LeetCode",
+        "url": "https://leetcode.com/u/unofficially_bhav"
+      },
+      {
+        "label": "Portfolio",
+        "url": "https://portfolioai-bo4m.onrender.com/"
+      },
+      {
+        "label": "Network Intrusion Anomaly Detector Repo",
+        "url": "https://github.com/unofficiallybhav/network-intrusion-anomaly-detector.git"
+      }
+    ],
+    "education": [
+      {
+        "degree": "B.Tech in Computer Science Engineering – Artificial Intelligence and Machine Learning",
+        "institution": "Manipal Institute of Technology",
+        "location": "Manipal, Karnataka",
+        "period": "2023 – 2027",
+        "grade": "7.93/10"
+      }
+    ],
+    "experience": [
+      {
+        "title": "Data and Analytics Intern",
+        "organization": "Lepton Software",
+        "period": "2026",
+        "highlights": [
+          "Built a sub-hourly rainfall nowcasting and traffic-impact pipeline integrating spateGAN and multi-quantile regression models to forecast road-level traffic disruption.",
+          "Engineered a geospatial data layer by integrating data from ERA5 reanalysis, Google Weather API and H3 spatial indexing for operational road-impact forecasting across Pune and Kolkata.",
+          "Backtested 59,000+ served road-hour predictions, reducing speed error by 18–63% versus climatological baselines."
+        ],
+        "technologies": []
+      }
+    ],
+    "projects": [
+      {
+        "name": "DepthForge",
+        "status": "completed",
+        "summary": "DepthForge is a complete CUDA‑accelerated implementation of the classical Semi‑Global Matching (SGM) algorithm for stereo depth estimation. The system takes a rectified stereo image pair and produces a dense disparity/depth representation entirely through GPU computation.",
+        "problem": "",
+        "approach": [
+          "Implemented a six‑stage GPU pipeline: Census Transform, Cost Volume Computation, 8‑Path SGM Aggregation, Winner‑Takes‑All disparity selection, Median Filtering, and Jet Colormap Visualization.",
+          "Used one CUDA thread per pixel for Census Transform and per disparity level within a scanline for SGM aggregation.",
+          "Leveraged CUDA shared memory to store previous scanline costs and parallel min‑reduction for cost aggregation.",
+          "Applied atomicAdd for aggregated cost accumulation and a 3×3 sorting‑network median filter to suppress noise.",
+          "Converted disparity maps to RGB heatmaps via a CUDA kernel."
+        ],
+        "technologies": [
+          "Computer Vision",
+          "CUDA",
+          "C++",
+          "GPU Parallelism",
+          "Shared Memory",
+          "Stereo Matching",
+          "Semi‑Global Matching",
+          "KITTI",
+          "Performance Optimization"
+        ],
+        "results": [
+          "MAE: 1.784 px",
+          "RMSE: 6.884 px",
+          "Bad1.0: 31.8%",
+          "Bad2.0: 12.1%",
+          "Bad3.0: 7.1%",
+          "Bad5.0: 4.1%",
+          "Median error: 0.708 px",
+          "≈30× speedup on synthetic 640×480 benchmark (48.064 ms vs 1440.6 ms CPU)",
+          "Median processing time ≈168 ms on NVIDIA RTX 3050 Laptop GPU",
+          "Bad3.0 comparable to OpenCV StereoSGBM (6–8%)"
+        ],
+        "next_steps": [],
+        "links": []
+      },
+      {
+        "name": "ForgetField — Adaptive Hopfield Memory with Dynamic Pattern Forgetting",
+        "status": "completed",
+        "summary": "ForgetField introduces Adaptive Hopfield Memory with Dynamic Pattern Forgetting (AHM‑DPF), a neural‑network architecture that augments associative memory with feedback‑driven adaptation and selective forgetting to improve sequential pattern learning. The system learns a hidden representation, uses a feedback signal derived from previous training loss to modulate regularization, and outputs classification logits. Experiments on the BitPatternSet benchmark demonstrate high accuracy.",
+        "problem": "Classical Hopfield networks have limited storage capacity and suffer from spurious attractors and catastrophic interference when patterns are learned sequentially.",
+        "approach": [
+          "Learned hidden representation for binary input patterns",
+          "Modern Hopfield‑style associative memory mechanism",
+          "Internal state conditioned on previous training performance",
+          "Feedback signal derived from previous epoch's training loss",
+          "Adaptive regularization behavior influenced by the feedback signal",
+          "Classification projection producing output logits",
+          "Combined classification and regularization objective"
+        ],
+        "technologies": [
+          "PyTorch",
+          "Neural Networks",
+          "Hopfield Networks",
+          "Associative Memory",
+          "Adaptive Learning",
+          "Feedback Learning",
+          "Pattern Recognition",
+          "Continual Learning"
+        ],
+        "results": [
+          "AHM‑DPF Large (64‑D) achieved 99.8% final evaluation accuracy, 0.043 final loss, and 100% best evaluation accuracy",
+          "AHM‑DPF Fair (8‑D) achieved 87.3% final accuracy, 0.280 final loss, and 88.3% best evaluation accuracy",
+          "Standard Hopfield Base achieved 56.4% final accuracy",
+          "Adaptive variants outperformed non‑adaptive baselines by 25–33 percentage points"
+        ],
+        "next_steps": [],
+        "links": []
+      },
+      {
+        "name": "Network Intrusion Anomaly Detection Using Machine Learning",
+        "status": "completed",
+        "summary": "Developed a dual‑paradigm network intrusion detection system that uses supervised learning to classify known attacks and unsupervised anomaly detection to flag zero‑day threats, evaluated on the UNSW‑NB15 dataset.",
+        "problem": "",
+        "approach": [
+          "Implemented supervised classifiers (Random Forest, LightGBM, XGBoost, Logistic Regression) on preprocessed data",
+          "Applied SMOTE (0.3 sampling) to reduce class imbalance from 19.67:1 to ~3.33:1",
+          "Performed PCA to reduce features to 25 components retaining 92.87% variance",
+          "Evaluated unsupervised methods (Isolation Forest, One-Class SVM) for anomaly detection",
+          "Combined supervised and unsupervised layers into a layered security architecture"
+        ],
+        "technologies": [
+          "Python",
+          "Scikit-learn",
+          "Random Forest",
+          "LightGBM",
+          "XGBoost",
+          "Logistic Regression",
+          "Isolation Forest",
+          "One-Class SVM",
+          "SMOTE",
+          "PCA",
+          "Network Security",
+          "Anomaly Detection"
+        ],
+        "results": [
+          "Random Forest achieved 99.47% accuracy and 99.47% F1",
+          "One-Class SVM achieved 0.858 ROC‑AUC, 100% recall of test attacks, and 28.4% false‑positive rate",
+          "Isolation Forest achieved 0.585 AUC"
+        ],
+        "next_steps": [],
+        "links": []
+      },
+      {
+        "name": "Adversarial Robustness of Deep Learning-Based Network Intrusion Detection Systems",
+        "status": "completed",
+        "summary": "This project studies the adversarial robustness of a deep neural network‑based Network Intrusion Detection System (NIDS) trained on UNSW‑NB15, evaluating how small perturbations to network‑flow features can cause misclassification. It also develops and assesses defenses to improve robustness.",
+        "problem": "Standard DNN‑based NIDS are vulnerable to gradient‑based adversarial attacks, leading to large drops in detection performance and misleading evaluation metrics on imbalanced intrusion‑detection data.",
+        "approach": [
+          "Implemented a fully connected IDS‑DNN with four hidden layers (42→256→128→64→32) and dropout, using categorical encoding, leakage prevention, min‑max normalization, targeted SMOTE, and class‑weighted loss",
+          "Evaluated FGSM and PGD attacks across six perturbation budgets (ε ∈ {0.00,0.01,0.05,0.10,0.20,0.30}) with PGD using 40 iterations",
+          "Trained a robust model using ε‑randomized PGD adversarial training (ε sampled from [0.01,0.15]) with a weighted combination of clean and adversarial losses",
+          "Performed SHAP DeepExplainer analysis to compare feature attribution and t‑SNE on penultimate‑layer representations to assess latent‑space changes"
+        ],
+        "technologies": [
+          "PyTorch",
+          "Deep Learning",
+          "Network Security",
+          "Adversarial ML",
+          "FGSM",
+          "PGD",
+          "Adversarial Training",
+          "SHAP",
+          "t‑SNE",
+          "SMOTE",
+          "UNSW‑NB15",
+          "IBM ART"
+        ],
+        "results": [
+          "Baseline macro F1 on clean data: 0.406; weighted F1: 0.709",
+          "Under PGD ε=0.10 macro F1 dropped to 0.074 (81.7% reduction)",
+          "Robust model macro F1 at ε=0.10: 0.240 (223.8% recovery)",
+          "Weighted F1 improved from 0.257 to 0.553",
+          "Reconnaissance class clean F1 reduced from 0.731 to 0.347; adversarial F1 improved from 0.008 to 0.224",
+          "t‑SNE showed tighter and better‑separated clusters for the robust model"
+        ],
+        "next_steps": [],
+        "links": []
+      },
+      {
+        "name": "ARC-Nodule — Acquisition-Robust Consistency for Lung Nodule Detection",
+        "status": "in_progress",
+        "summary": "ARC‑Nodule is an ongoing research pipeline that builds a lung‑nodule detection and malignancy‑classification system robust to CT acquisition variations such as slice thickness, dose, and reconstruction kernel, without requiring labeled data from the target protocol. It is delivered as a fully standalone package independent of a companion detection pipeline.",
+        "problem": "Nodule detectors are typically trained on thin‑slice CT (≤2.5 mm) and benchmarked on LUNA16, which excludes thicker slices. Real‑world scans often have 3–10 mm thickness, causing a dramatic sensitivity drop (e.g., 45.2% → 26.2% at 5 mm, a 42% relative decrease). ARC‑Nodule targets this acquisition‑protocol shift, which cannot be solved by simple domain‑mapping approaches.",
+        "approach": [
+          "Physics‑Simulated Acquisition Augmentation (PSAA) creates labeled “hard domain” data by applying z‑axis blur, resampling to random slice thicknesses, and calibrated dose‑noise injection",
+          "Anisotropy‑aware 3D Swin Transformer encoder conditioned on voxel spacing via FiLM‑style injection with anisotropic attention windows",
+          "Cross‑Acquisition Consistency Distillation (CACD) aligns detection heatmaps/embeddings and malignancy logits between degraded and native‑resolution passes using a cosine/KL loss with a TermBalancer",
+          "Multi‑seed (3–5 seeds) from‑scratch training protocol for robust evaluation",
+          "Statistical power analysis to pre‑define sample sizes and detectable‑effect thresholds",
+          "Whole‑scan sliding‑window harness for detection scoring"
+        ],
+        "technologies": [
+          "PyTorch",
+          "3D Swin Transformer",
+          "Medical Imaging",
+          "CT Image Processing",
+          "Physics‑Based Data Augmentation",
+          "Domain Generalization",
+          "Consistency Distillation",
+          "LUNA16",
+          "LIDC‑IDRI",
+          "GPU Training (Kaggle)",
+          "Experimental Design",
+          "Statistical Power Analysis",
+          "Ablation Studies"
+        ],
+        "results": [
+          "Validated finding: combining PSAA with the spacing‑conditioned encoder reduces thickness‑induced CPM drop from 33.1% to 21.6% at 5 mm and from 70.2% to 59.5% at 10 mm, improving in 9/9 seed‑by‑thickness cells (≥3 mm) with no measurable cost to thin‑slice detection",
+          "Unresolved finding: the CACD module has not yet met its pre‑registered performance criterion; initial runs showed near‑zero weighting of the detection‑loss term, a second rebalanced run showed a non‑significant gain, and a properly powered retest is still pending"
+        ],
+        "next_steps": [
+          "Execute a properly powered, pre‑registered retest of the CACD consistency‑distillation module"
+        ],
+        "links": []
+      },
+      {
+        "name": "Lepton — Rain-to-Traffic Impact Prediction and Analysis",
+        "status": "completed",
+        "summary": "Lepton is a production rain → road‑traffic analytics platform (part of the TraffiCure system) that quantifies and predicts how rainfall degrades road traffic at individual‑road granularity across ten Indian cities.",
+        "problem": "Naive \"rain slows traffic\" analytics fail on real municipal data for three reasons: baseline contamination (rain slowdown confounded with rush hour), spatio‑temporal misalignment (different timestamp grids yielding zero joins), and rain‑source disagreement (different precipitation products under‑catching real rainfall). The system works exclusively in baseline‑relative space and aligns timestamps to IST clock hour, and selects ERA5‑Land as the default rain source after validation.",
+        "approach": [
+          "Weather ingest layer normalising ERA5, ERA5‑Land, NASA IMERG, Google Weather, and Open‑Meteo to a common hourly per‑H3‑cell precipitation schema with latency handling.",
+          "Retrospective analytics including a rain vulnerability builder with rigorous gating, rain network propagation analysis, flood impact isolation, and PDF reporting.",
+          "Predictive models for Pune: weighted log‑linear regression forecast v2 (production) with conformalized quantile regression severity bounds, and nowcast v2‑v4 blending spateGAN‑derived rain fields and 15‑minute traffic panels.",
+          "Adaptive serve gating based on relative forecast rain thresholds.",
+          "Serving layer of three dependency‑free http.server dashboards exposing HTML and JSON APIs.",
+          "Cross‑database ETL joining PostgreSQL/PostGIS instances in pandas, with read‑only transaction settings."
+        ],
+        "technologies": [
+          "Python",
+          "PostgreSQL / PostGIS",
+          "pandas",
+          "NumPy",
+          "SQLAlchemy",
+          "psycopg",
+          "statsmodels (WLS, quantile regression)",
+          "Conformal Prediction (CQR)",
+          "LightGBM",
+          "PyTorch",
+          "H3 Geospatial Indexing",
+          "ERA5 / ERA5‑Land / IMERG / Copernicus CDS",
+          "netCDF4",
+          "Google Weather API",
+          "Cross‑Database ETL",
+          "Causal Inference methods",
+          "Time‑Series Forecasting & Nowcasting",
+          "Matplotlib / PDF Reporting"
+        ],
+        "results": [
+          "Retrospective builder reproduced live production bottleneck report road‑for‑road (151 qualifying roads, 33 storm‑dependent tier, 0.3% delta on top‑road excess delay).",
+          "Causal‑inference validation passed 3/3 tests, showing 3.7× alert lift during propagation windows and 4.4× during flood windows.",
+          "Forecast v2 WLS with ERA5 rain achieved +14.2% wet‑row skill vs naive (MAPE 7.67% vs 8.94%).",
+          "Forecast v2 with spateGAN rain achieved +19.2% wet‑row skill.",
+          "Nowcast v4 blend reduced +15 min MAE by ~26% and +30 min MAE by ~15%; conformal widening lifted quantile coverage to ~0.90.",
+          "Network amplification measured at 5.92 and spillover share 0.83, with 329 surprise receivers identified."
+        ],
+        "next_steps": [],
+        "links": []
+      },
+      {
+        "name": "PortfolioAI — Resume-Based Portfolio Chatbot and Job-Match Web App",
+        "status": "completed",
+        "summary": "Built PortfolioAI, a full-stack AI portfolio chatbot with a FastAPI backend and custom HTML frontend that extracts a structured candidate profile from PDF/DOCX resumes, parses job descriptions, and scores candidate-role fit through a tool-using LLM agent with cached profile state and session-based chat handling.",
+        "problem": "",
+        "approach": [
+          "Implemented core intelligence layer in portfolioAI.py to read resumes, extract text, use Groq-hosted LLM to build structured JSON profile, parse job descriptions, compare skills, and run an agent loop with tool calls.",
+          "Developed FastAPI backend in api.py with startup hook for profile caching, per-user chat sessions identified by UUIDs, thread-safe session locks, health, sessions, chat endpoints, and CORS support.",
+          "Created HTML/CSS/JavaScript single-page frontend in index.html providing chat interface, session controls, message composition, thinking status, answer display with job-match verdict cards, visual score rendering, and skill chips."
+        ],
+        "technologies": [
+          "Python",
+          "FastAPI",
+          "Groq API",
+          "Pydantic",
+          "PDF Parsing",
+          "DOCX Parsing",
+          "HTML/CSS/JavaScript",
+          "Session Management",
+          "LLM Tool Use",
+          "Structured JSON Output",
+          "Resume Parsing",
+          "Job Matching"
+        ],
+        "results": [],
+        "next_steps": [],
+        "links": []
+      },
+      {
+        "name": "Video Transcript RAG — Lecture and Media Question Answering System",
+        "status": "completed",
+        "summary": "Video Transcript RAG is a retrieval‑augmented question‑answering system for lecture and media content. It converts video files to audio, transcribes them, chunks the transcript, embeds the chunks, indexes them in Qdrant, and answers user queries using a Groq LLM with timestamps drawn from the retrieved transcript.",
+        "problem": "",
+        "approach": [
+          "Media-to-audio conversion using FFmpeg and normalization to 16 kHz mono",
+          "Splitting oversized audio files while preserving time offsets",
+          "Speech‑to‑text transcription with Groq Whisper (whisper-large-v3-turbo) and local caching of transcript JSON",
+          "Chunking transcript segments into overlapping text chunks with metadata (text, timestamps, source, index)",
+          "Generating dense embeddings for each chunk using sentence‑transformers (all‑MiniLM‑L6‑v2)",
+          "Indexing embeddings and metadata in Qdrant with a payload index on the source field and deterministic UUIDs",
+          "Performing semantic search by embedding the user query, retrieving top‑k chunks, and feeding them to a Groq LLM for grounded answers that include timestamps"
+        ],
+        "technologies": [
+          "FFmpeg",
+          "Groq Whisper (whisper-large-v3-turbo)",
+          "sentence‑transformers (all‑MiniLM‑L6‑v2)",
+          "Qdrant",
+          "Groq LLM"
+        ],
+        "results": [],
+        "next_steps": [],
+        "links": []
+      }
+    ],
+    "skills": {
+      "Languages": [
+        "Python",
+        "C++",
+        "C",
+        "Java",
+        "SQL"
+      ],
+      "Libraries and Tools": [
+        "PyTorch",
+        "Scikit-learn",
+        "NumPy",
+        "Pandas",
+        "Matplotlib",
+        "PostGIS",
+        "PostgreSQL"
+      ]
+    },
+    "certifications": [
+      "Big Data Specialization – University of California San Diego"
+    ],
+    "coursework": [
+      "Deep Learning",
+      "Computer Vision",
+      "Object-Oriented Programming",
+      "Database Management Systems",
+      "Big Data Analytics"
+    ],
+    "achievements": []
+  }
+}
