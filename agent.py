@@ -26,7 +26,7 @@ from langgraph.config import get_stream_writer
 from langgraph.graph import END, START, StateGraph
 
 from documents import ToolFailure, parse_document
-from llm import MODEL, client
+from llm import reduce_stream, stream_chat
 from tools import KnowledgeError, build_profile, match_profile, needs_rebuild
 
 log = logging.getLogger("portfolio-agent")
@@ -233,41 +233,31 @@ def llm_node(state: State) -> dict:
     state = {**state, **update}
 
     messages = [{"role": "system", "content": system_prompt(state)}] + recent_history(state["messages"])
-    content, calls = "", {}
+    content, calls = "", []
     for attempt in range(2):
-        content, calls = "", {}
+        content, calls, chunks = "", [], []
         try:
-            stream = client.chat.completions.create(
-                model=MODEL, messages=messages, tools=tool_list(state),
-                parallel_tool_calls=False, temperature=0.3, stream=True,
-            )
-            for chunk in stream:
-                if not chunk.choices:
-                    continue
-                delta = chunk.choices[0].delta
-                if delta.content:
-                    content += delta.content
-                    emit({"type": "token", "text": delta.content})
-                for tc in delta.tool_calls or []:
-                    slot = calls.setdefault(tc.index, {"id": "", "name": "", "arguments": ""})
-                    slot["id"] = tc.id or slot["id"]
-                    if tc.function:
-                        slot["name"] += tc.function.name or ""
-                        slot["arguments"] += tc.function.arguments or ""
+            for chunk in stream_chat(messages, tools=tool_list(state),
+                                     parallel_tool_calls=False, temperature=0.3):
+                chunks.append(chunk)
+                text = ((chunk.get("choices") or [{}])[0].get("delta") or {}).get("content")
+                if text:
+                    content += text
+                    emit({"type": "token", "text": text})
             break
         except GroqError as exc:
             # Usually a malformed tool call. Retry once only if nothing reached the user yet.
             log.warning("LLM call failed (attempt %d): %s", attempt + 1, exc)
             if content or attempt == 1:
                 break
+        finally:
+            calls = reduce_stream(chunks)["choices"][0]["message"].get("tool_calls") or []
 
     assistant: dict[str, Any] = {"role": "assistant", "content": content}
     if calls:
-        first = calls[min(calls)]  # one tool at a time
-        assistant["tool_calls"] = [{
-            "id": first["id"], "type": "function",
-            "function": {"name": first["name"], "arguments": first["arguments"] or "{}"},
-        }]
+        first = calls[0]  # one tool at a time
+        first["function"]["arguments"] = first["function"]["arguments"] or "{}"
+        assistant["tool_calls"] = [first]
     elif not content.strip():
         content = "Sorry, I couldn't put an answer together just now. Please try asking again."
         emit({"type": "token", "text": content})

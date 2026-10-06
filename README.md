@@ -64,10 +64,30 @@ parsed JD, the match result, the retry count per tool, and the last error.
 | `agent.py` | Graph, nodes, routing, system prompt |
 | `tools.py` | build_profile and match_profile logic |
 | `documents.py` | Text extraction and the three document schemas |
-| `llm.py` | Groq client and JSON-mode helper |
+| `llm.py` | Groq client, JSON-mode helper, traced completions |
 | `api.py` | FastAPI: sessions, uploads, Server-Sent Events streaming |
 | `index.html` | Chat UI with attachments, streamed answers and the verdict card |
 | `legacy/` | The previous ReAct version, kept for reference |
+
+## Observability (LangSmith)
+
+Tracing is off unless `LANGSMITH_TRACING=true`, so local runs stay out of the project
+by default. Set these on the deployed service:
+
+| Variable | Value |
+| --- | --- |
+| `LANGSMITH_TRACING` | `true` |
+| `LANGSMITH_API_KEY` | a key from smith.langchain.com → Settings → API keys |
+| `LANGSMITH_PROJECT` | `portfolio-assistant-prod` (local `.env` uses `-dev`) |
+| `LANGSMITH_ENDPOINT` | `https://apac.api.smith.langchain.com` — the workspace is APAC; without this the SDK defaults to US and every trace 403s |
+
+LangGraph traces the graph itself — which nodes ran, retries, state. The Groq SDK is
+called directly, so `llm.py` wraps both completions in `@traceable(run_type="llm")`:
+`groq.chat` for JSON-mode calls and `groq.chat.stream` for the streamed answer, whose
+chunks `reduce_stream` reassembles into one completion with token counts.
+
+`api.py` passes the session id as run metadata, so every turn of one recruiter's chat
+is grouped under a single thread in the LangSmith **Threads** tab.
 
 ## Groq free tier
 

@@ -80,7 +80,14 @@ def get_session(session_id: str) -> Session:
 
 
 def config(session_id: str) -> dict:
-    return {"configurable": {"thread_id": session_id}, "recursion_limit": 30}
+    # The session id doubles as the LangSmith thread id, so every turn of one
+    # recruiter's chat is grouped under a single thread in the UI.
+    return {
+        "configurable": {"thread_id": session_id},
+        "recursion_limit": 30,
+        "metadata": {"session_id": session_id},
+        "run_name": "chat turn",
+    }
 
 
 def profile_summary() -> dict:
