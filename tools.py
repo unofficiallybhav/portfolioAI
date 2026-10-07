@@ -6,6 +6,7 @@ handles retries and state.
 
 import hashlib
 import json
+import logging
 import re
 import threading
 import time
@@ -34,6 +35,9 @@ BASE_DIR = Path(__file__).parent
 KNOWLEDGE_DIR = BASE_DIR / "knowledge"
 PROFILE_PATH = BASE_DIR / "profile.json"
 BUILD_ATTEMPTS = 3
+
+log = logging.getLogger("portfolio-tools")
+_warned_stale: list[dict] = []  # fingerprints already warned about
 
 
 # ---------------------------------------------------------------- build_profile
@@ -207,6 +211,33 @@ def merge(resume: ResumeDoc, projects: ProjectsDoc | None) -> Profile:
     )
 
 
+def load_profile() -> tuple[dict, str]:
+    """Return (profile, version) for serving, without ever calling the model.
+
+    Rebuilding takes ~13 throttled LLM calls and several minutes, which must never
+    happen while answering a request: on Render that stalls the port binding past
+    the health check, and the rebuilt file is lost with the container's disk anyway.
+    A stale profile is served with a warning instead. Rebuilds are deliberate --
+    `python -m tools` locally (enforced by the pre-commit hook), or the
+    build_profile tool when the user says the sources changed.
+    """
+    cached = load_cached()
+    if cached is None:  # nothing to serve at all; no choice but to build
+        profile, version, _ = build_profile()
+        return profile, version
+
+    current, stored = fingerprint(), cached.get("sources") or {}
+    if current != stored and current not in _warned_stale:
+        _warned_stale.append(current)  # once per distinct edit, not once per turn
+        changed = [name for name, digest in current.items() if stored.get(name) != digest]
+        log.warning(
+            "profile.json is stale (%s changed since it was built). Serving the cached "
+            "profile anyway. Run `python -m tools` and commit the result.",
+            ", ".join(sorted(changed)) or "sources",
+        )
+    return cached["profile"], cached["version"]
+
+
 def build_profile() -> tuple[dict, str, bool]:
     """Return (profile, version, rebuilt). Rebuilds only when the sources changed."""
     with _BUILD_LOCK:
@@ -343,3 +374,16 @@ def match_profile(jd: dict | None, profile: dict, feedback: str | None = None) -
         missing_skills=known(draft.missing_skills),
         recommendation=recommendation_for(draft.score),
     )
+
+
+if __name__ == "__main__":  # python -m tools -- rebuild profile.json on purpose
+    import sys
+
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
+    if not needs_rebuild():
+        print("profile.json is already current.")
+        sys.exit(0)
+    print("Rebuilding profile.json. This makes ~13 throttled model calls and takes a few minutes.")
+    profile, version, _ = build_profile()
+    print(f"Rebuilt {PROFILE_PATH.name} for {profile['name']} (version {version}).")
+    print("Commit it so the deployed service loads it instead of rebuilding at boot.")

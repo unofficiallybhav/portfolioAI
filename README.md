@@ -32,8 +32,7 @@ start. Nothing rebuilds while the hashes match. The build parses the projects fi
 ## Agent graph (LangGraph)
 
 ```
-START ──(sources changed?)──► build_profile ──► llm
-  └──────────────────────────────────────────► llm
+START ──► llm
 llm ──(tool call?)──► build_profile | parse_documents | match_profile | END
 parse_documents, match_profile ──(transient failure, retries left)──► same node
                                └──────────────────────────────────► llm
@@ -42,7 +41,7 @@ parse_documents, match_profile ──(transient failure, retries left)──► 
 | Node | Does |
 | --- | --- |
 | `llm` | Answers from the profile and streams tokens. Picks one tool at a time |
-| `build_profile` | Parses resume and projects into `profile.json` when they change |
+| `build_profile` | Rebuilds `profile.json` from resume and projects. Reached only by an explicit tool call, when the user says the sources changed — never on the way to an answer |
 | `parse_documents` | Parses a `.pdf`, `.docx` or `.md` upload, or pasted text, into the schema for its type: `job_description`, `resume` or `projects` |
 | `match_profile` | Scores the last JD against the profile (0 to 100), returns matched and missing skills and a cover-letter verdict with no resume metrics in it |
 
@@ -68,6 +67,23 @@ parsed JD, the match result, the retry count per tool, and the last error.
 | `api.py` | FastAPI: sessions, uploads, Server-Sent Events streaming |
 | `index.html` | Chat UI with attachments, streamed answers and the verdict card |
 | `legacy/` | The previous ReAct version, kept for reference |
+
+## The profile cache
+
+`profile.json` is the built profile plus a SHA-256 of each file in `knowledge/`.
+Answering a request **never** rebuilds it: `load_profile` serves the cached file and
+warns once if the hashes no longer match. A rebuild is ~13 model calls throttled to
+8k tokens/minute, so doing it at boot stalls the port binding past Render's health
+check — and the result dies with the container's disk, so it would repeat every
+deploy and every cold start.
+
+Rebuild deliberately after editing anything in `knowledge/`:
+
+    uv run python -m tools
+    git add profile.json
+
+The `pre-commit` hook blocks commits that would leave it stale. It lives in
+`.git/hooks/pre-commit`, so reinstall it after a fresh clone (`--no-verify` bypasses).
 
 ## Observability (LangSmith)
 

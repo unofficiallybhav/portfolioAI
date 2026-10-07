@@ -1,7 +1,6 @@
 """LangGraph agent for the portfolio chatbot.
 
-    START --(sources changed?)--> build_profile --> llm
-      \\--------------------------------------------> llm
+    START --> llm
     llm --(tool call?)--> build_profile | parse_documents | match_profile | END
     parse_documents / match_profile --(transient failure, retries left?)--> itself
                                     \\--------------------------------------> llm
@@ -13,6 +12,10 @@ the user what went wrong. A success resets the counter.
 
 The llm node streams its tokens through LangGraph's "custom" stream as
 {"type": "token", "text": ...}. Tool nodes emit {"type": "status", ...}.
+
+Answering never rebuilds the profile: nodes read it through load_profile, which
+serves the cached profile.json (with a warning if stale). Only the build_profile
+tool rebuilds, and only when the user says the source documents changed.
 """
 
 import json
@@ -27,7 +30,7 @@ from langgraph.graph import END, START, StateGraph
 
 from documents import ToolFailure, parse_document
 from llm import reduce_stream, stream_chat
-from tools import KnowledgeError, build_profile, match_profile, needs_rebuild
+from tools import KnowledgeError, build_profile, load_profile, match_profile
 
 log = logging.getLogger("portfolio-agent")
 
@@ -200,7 +203,7 @@ def recent_history(messages: list[dict]) -> list[dict]:
 
 def ensure_profile(state: State) -> dict:
     """Load the profile into state when missing or rebuilt by another session."""
-    profile, version, _ = build_profile()
+    profile, version = load_profile()
     if state.get("profile_version") == version:
         return {}
     return {"profile": profile, "profile_version": version}
@@ -344,10 +347,6 @@ def match_profile_node(state: State) -> dict:
 
 # ---------------------------------------------------------------- routing
 
-def route_start(state: State) -> str:
-    return "build_profile" if needs_rebuild() else "llm"
-
-
 def route_llm(state: State) -> str:
     last = state["messages"][-1]
     calls = last.get("tool_calls") or []
@@ -374,7 +373,7 @@ def build_graph(checkpointer=None):
     g.add_node("match_profile", match_profile_node)
     g.add_node("unknown_tool", unknown_tool_node)
 
-    g.add_conditional_edges(START, route_start, ["build_profile", "llm"])
+    g.add_edge(START, "llm")
     g.add_edge("build_profile", "llm")
     g.add_conditional_edges("llm", route_llm,
                             ["build_profile", "parse_documents", "match_profile", "unknown_tool", END])

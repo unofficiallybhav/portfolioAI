@@ -622,6 +622,8 @@ These projects collectively demonstrate experience across several complementary 
   - job-description parsing, candidate-role scoring and cover-letter generation
   - a FastAPI backend with Server-Sent Events streaming
   - a custom HTML/CSS/JavaScript frontend
+  - LangSmith tracing of live conversations
+  - public deployment under a free-tier rate limit
 
   ### What was built
 
@@ -630,9 +632,10 @@ These projects collectively demonstrate experience across several complementary 
   The agent is a LangGraph state graph with four main nodes: one LLM node and three
   tool nodes (build_profile, parse_documents and match_profile).
 
-  - The entry point is conditional: build_profile runs first only when the resume or
-    the project write-up file has changed, detected by a SHA-256 content hash of each
-    file. Otherwise the graph goes straight to the LLM node.
+  - The entry point goes straight to the LLM node. Answering a question never rebuilds
+    the profile: nodes read it from the cached profile.json, which carries a SHA-256
+    content hash of each source file and is served with a warning if those hashes no
+    longer match. build_profile is reached only by an explicit tool call.
   - The LLM node decides whether to answer directly or call a tool, and conditional
     edges route each tool call to the matching tool node.
   - Tools are called one at a time, and each tool node returns its result to the LLM
@@ -698,8 +701,9 @@ These projects collectively demonstrate experience across several complementary 
   - Session management with per-session locks, idle-session expiry and a cap on
     active sessions.
   - Upload validation for file type and size.
-  - The profile is built or loaded at startup, so the server refuses to start without
-    a knowledge base.
+  - The profile is loaded from cache at startup and never rebuilt there, so the server
+    binds its port in milliseconds. It refuses to start only if no profile exists at
+    all, rather than answering without a knowledge base.
 
   #### HTML frontend
 
@@ -715,12 +719,36 @@ These projects collectively demonstrate experience across several complementary 
   A command-line chat client streams answers in the terminal and supports attaching
   files and inspecting the agent state.
 
+  #### Observability
+
+  Deployed chats are traced to LangSmith so real recruiter usage can be inspected.
+
+  - LangGraph traces the graph itself: which nodes ran, which tools were called, retry
+    counts and state at each step.
+  - Because the Groq SDK is called directly rather than through a LangChain wrapper,
+    the model calls would not appear on their own. Both call sites are wrapped as
+    traced LLM runs, including the streaming one, where the streamed chunks are
+    reassembled into a single completion so each trace shows the full prompt, the tool
+    calls and the token counts instead of a list of fragments.
+  - The chat session ID is attached as run metadata, so every turn of one recruiter's
+    conversation is grouped into a single thread in the trace UI.
+  - Tracing is off unless an environment variable enables it, so local development and
+    tests stay out of the project, and local and deployed traces go to separate
+    projects.
+
   ### Technical design
 
   A notable engineering choice is how the agent is kept honest and cheap to run:
 
-  - The profile is rebuilt only when a source document’s content hash changes, so
-    restarts and ordinary chats never re-parse documents.
+  - Rebuilding the profile is deliberate, never automatic. A rebuild costs roughly
+    thirteen model calls throttled to 8,000 tokens per minute, so it takes minutes.
+    Doing it on startup stalled the port binding past the host’s health check, and
+    because the host’s filesystem is ephemeral the rebuilt file was discarded with the
+    container, so every deploy and cold start repeated the whole thing. The serving
+    path now only ever reads the cached profile, a pre-commit hook blocks any commit
+    that would leave it stale against the source documents, and a one-command script
+    rebuilds it on purpose. The effect was zero model calls at startup instead of
+    thirteen, and a boot of milliseconds instead of three and a half minutes.
   - Tool failures are classified as transient, unclear or precondition errors, so the
     graph can retry automatically, ask the user for better input, or correct the tool
     order without wasting attempts.
@@ -731,14 +759,15 @@ These projects collectively demonstrate experience across several complementary 
   ### Technical focus
 
   Python · LangGraph · Groq API · OpenAI GPT-OSS · FastAPI · Server-Sent Events ·
-  Pydantic · PDF Parsing · DOCX Parsing · Markdown Parsing · HTML/CSS/JavaScript ·
-  LLM Tool Calling · Agent State Management · Structured JSON Output · Retry and
-  Failure Handling · Grounded Question Answering · Job Matching
+  Pydantic · LangSmith · PDF Parsing · DOCX Parsing · Markdown Parsing ·
+  HTML/CSS/JavaScript · LLM Tool Calling · Agent State Management · Structured JSON
+  Output · Retry and Failure Handling · Grounded Question Answering · Job Matching ·
+  LLM Observability and Tracing · Rate-Limit Handling · Deployment
 
   ### Status
 
-  Version 2 is built and runs locally. Deploying it publicly to replace version 1 is
-  the next step.
+  Version 2 is built and deployed publicly, replacing version 1. Chats on the live
+  service are traced to LangSmith.
 
   ### Resume-oriented summary
 
@@ -747,7 +776,10 @@ These projects collectively demonstrate experience across several complementary 
   > agent graph with an LLM node and three tool nodes (profile building, typed
   > document parsing for PDF/DOCX/Markdown, and candidate-role matching with a
   > cover-letter style verdict), conditional routing, per-tool retry limits, hash-based
-  > profile caching and token-by-token streaming over a FastAPI backend.
+  > profile caching and token-by-token streaming over a FastAPI backend; deployed it
+  > publicly and instrumented it with LangSmith tracing to inspect real recruiter
+  > conversations, cutting cold-start time from three and a half minutes to
+  > milliseconds by removing thirteen rate-limited model calls from the startup path.
 
 ## 8. Video Transcript RAG — Lecture and Media Question Answering System
 
@@ -839,9 +871,9 @@ If these projects are being used for a software/ML systems resume, the strongest
 2. **ForgetField / AHM-DPF** — strongest novel ML/research signal
 3. **Adversarial NIDS** — strongest security/deep-learning signal
 4. **Network Intrusion Detection** — strongest breadth of classical ML techniques
-5. **Lepton** — strongest production-systems, data-engineering, and applied-statistics signal; the only project with a live deployment, real operational data, and a reproduced-against-production validation
+5. **Lepton** — strongest production-systems, data-engineering, and applied-statistics signal; real operational data, and a reproduced-against-production validation
 6. **ARC-Nodule** — strongest domain-specific (medical imaging) and experimental-rigor signal; list as an active/in-progress project rather than a completed one, since its headline mechanism is still under test
-7. **Portfolio AI**
+7. **Portfolio AI** — strongest LLM-agent and applied-LLM-engineering signal; a publicly deployed, traced agent system with grounded answering and failure handling
 8. **Video Transcript RAG**
 
 The six projects together give a much broader technical profile than presenting them all simply as “machine learning projects” — spanning systems/GPU engineering, novel architecture research, classical and adversarial ML, cybersecurity, production data engineering and applied statistics, and applied medical-imaging research with a strong emphasis on statistically rigorous experimental design.

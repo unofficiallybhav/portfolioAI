@@ -25,7 +25,7 @@ from fastapi.responses import FileResponse, StreamingResponse
 
 from agent import GRAPH, MAX_RETRIES, initial_state
 from documents import SUPPORTED_SUFFIXES, extract_text
-from tools import build_profile
+from tools import load_profile
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("portfolio-api")
@@ -91,7 +91,7 @@ def config(session_id: str) -> dict:
 
 
 def profile_summary() -> dict:
-    profile, version, _ = build_profile()
+    profile, version = load_profile()
     return {
         "name": profile["name"],
         "links": profile.get("links", []),
@@ -103,10 +103,12 @@ def profile_summary() -> dict:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Build (or load) the profile before taking traffic. Deliberately not caught:
-    # a portfolio bot with no knowledge base should not start.
-    profile, _, rebuilt = build_profile()
-    log.info("Profile %s for %s", "rebuilt" if rebuilt else "loaded from cache", profile["name"])
+    # Load the profile before taking traffic. Never rebuilds (see load_profile):
+    # the port must bind in seconds, and a rebuild here would be lost with the
+    # container's disk. Still not caught -- with no profile at all there is
+    # nothing to answer from, so the service should fail loudly rather than lie.
+    profile, version = load_profile()
+    log.info("Profile %s loaded for %s", version, profile["name"])
     yield
     with SESSIONS_LOCK:
         for sid in list(SESSIONS):
