@@ -22,6 +22,7 @@ from pathlib import Path
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
 
 from agent import GRAPH, MAX_RETRIES, initial_state
 from documents import SUPPORTED_SUFFIXES, extract_text
@@ -116,6 +117,10 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Portfolio Bot", version="2.0", lifespan=lifespan)
+
+# og.png lives here. Link-preview crawlers fetch it unauthenticated, so it has
+# to be a plain public file rather than anything behind a session.
+app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 
 
 @app.get("/", include_in_schema=False)
